@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { ReactNode } from 'react';
@@ -24,6 +25,8 @@ export function MapProvider({ children }: MapProviderProps) {
           </pre>
           <p className="mt-2">
             Make sure to enable "Maps JavaScript API" and "Places API" (optional, for address search) in your Google Cloud Console.
+            Also ensure you have created and associated a Map ID with your key if you are using custom map styles.
+            If using a Map ID, set it in <code>.env.local</code> as <code>NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=YOUR_MAP_ID_HERE</code>.
           </p>
         </div>
       </div>
@@ -36,3 +39,4 @@ export function MapProvider({ children }: MapProviderProps) {
     </APIProvider>
   );
 }
+

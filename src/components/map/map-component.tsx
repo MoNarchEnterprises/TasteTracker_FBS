@@ -1,7 +1,8 @@
+
 "use client";
 
 import type { FoodTruck } from '@/types';
-import { Map, InfoWindow } from '@vis.gl/react-google-maps';
+import { Map } from '@vis.gl/react-google-maps';
 import { FoodTruckMarker } from './food-truck-marker';
 import { useEffect, useState } from 'react';
 
@@ -12,6 +13,7 @@ interface MapComponentProps {
 
 const DEFAULT_CENTER = { lat: 34.052235, lng: -118.243683 }; // Downtown Los Angeles
 const DEFAULT_ZOOM = 12;
+const DEFAULT_MAP_ID = "8ea6910316a0016bfd7680be";
 
 export function MapComponent({ trucks, selectedTruckId }: MapComponentProps) {
   const [center, setCenter] = useState(DEFAULT_CENTER);
@@ -58,7 +60,7 @@ export function MapComponent({ trucks, selectedTruckId }: MapComponentProps) {
         zoom={zoom}
         gestureHandling={'greedy'}
         disableDefaultUI={true}
-        mapId={process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID || "TASTE_TRACKER_MAP"} // Optional: For custom map styling
+        mapId={process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID || DEFAULT_MAP_ID}
         className="h-full w-full"
         onCenterChanged={(ev) => setCenter(ev.detail.center)}
         onZoomChanged={(ev) => setZoom(ev.detail.zoom)}
@@ -70,3 +72,4 @@ export function MapComponent({ trucks, selectedTruckId }: MapComponentProps) {
     </div>
   );
 }
+
