@@ -3,7 +3,7 @@
 import type { FoodTruck } from '@/types';
 import { MapComponent } from '@/components/map/map-component';
 import { FoodTruckCard } from '@/components/food-truck/food-truck-card';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -20,6 +20,16 @@ export default function HomeClient({ trucks }: HomeClientProps) {
   const [availabilityFilter, setAvailabilityFilter] = useState<'all' | FoodTruck['availability']>('all');
   const [selectedTruckId, setSelectedTruckId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsLargeScreen(window.innerWidth >= 1024);
+    };
+    checkScreenSize(); // Initial check
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   const uniqueCuisines = useMemo(() => {
     const cuisines = new Set<string>();
@@ -94,12 +104,17 @@ export default function HomeClient({ trucks }: HomeClientProps) {
       {/* Main Content Area */}
       <div className="flex-grow grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-0">
         {/* Map View - always present for responsiveness, shown/hidden by viewMode on larger screens */}
-        <div id="map-view-section" className={viewMode === 'map' || viewMode === 'list' && window.innerWidth >= 1024 ? 'lg:col-span-2 h-full min-h-[300px] md:min-h-[400px]' : 'hidden'}>
+        <div 
+          id="map-view-section" 
+          className={viewMode === 'map' || (viewMode === 'list' && isLargeScreen) ? 'lg:col-span-2 h-full min-h-[300px] md:min-h-[400px]' : 'hidden'}
+        >
            <MapComponent trucks={filteredTrucks} selectedTruckId={selectedTruckId} />
         </div>
 
         {/* List View - shown conditionally or as primary view */}
-         <div className={viewMode === 'list' || viewMode === 'map' && window.innerWidth >= 1024 ? 'lg:col-span-1 h-full min-h-0' : 'hidden lg:block lg:col-span-1 h-full min-h-0'}>
+         <div 
+           className={viewMode === 'list' || (viewMode === 'map' && isLargeScreen) ? 'lg:col-span-1 h-full min-h-0' : 'hidden lg:block lg:col-span-1 h-full min-h-0'}
+         >
           <ScrollArea className="h-full pr-3">
             <div className="space-y-4">
               {filteredTrucks.length > 0 ? (
@@ -115,7 +130,7 @@ export default function HomeClient({ trucks }: HomeClientProps) {
         </div>
       </div>
        {/* Fallback for smaller screens or when map is primary */}
-      {viewMode === 'map' && window.innerWidth < 1024 && (
+      {viewMode === 'map' && !isLargeScreen && (
         <div className="mt-6 lg:hidden">
           <h2 className="text-xl font-semibold mb-3">Truck List</h2>
            <ScrollArea className="h-[calc(100vh-25rem)] pr-3">
@@ -134,4 +149,3 @@ export default function HomeClient({ trucks }: HomeClientProps) {
       )}
     </div>
   );
-}
