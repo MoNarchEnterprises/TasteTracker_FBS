@@ -1,0 +1,7 @@
+<!-- This is a placeholder. Replace with an actual .ico file. 
+For demonstration, creating a tiny SVG and naming it .ico for build purposes.
+A real .ico file is a binary format.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
+  <path d="M8.202 2.222a.75.75 0 00-1.404 0L5.002 6.04H1.75a.75.75 0 000 1.5h2.803l-1.98 3.69a.75.75 0 001.33.715L6.198 8.03h3.604l2.295 3.915a.75.75 0 001.33-.716L11.447 7.54h2.803a.75.75 0 000-1.5h-3.25L8.202 2.222zM7.25 8.04l-1.697 3.17L7.5 7.54H3.66l1.748-3.272L7.25 8.04zm1.5 0h3.58L9 4.268 7.152 7.54h1.598zm0 0"/>
+</svg>

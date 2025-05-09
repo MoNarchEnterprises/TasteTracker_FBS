@@ -59,7 +59,10 @@ export default {
   				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
   				border: 'hsl(var(--sidebar-border))',
   				ring: 'hsl(var(--sidebar-ring))'
-  			}
+  			},
+        'status-red': 'hsl(var(--status-red))',
+        'status-green': 'hsl(var(--status-green))',
+        'status-yellow': 'hsl(var(--status-yellow))',
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
