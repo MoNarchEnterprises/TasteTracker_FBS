@@ -13,7 +13,6 @@ interface MapComponentProps {
 
 const DEFAULT_CENTER = { lat: 34.052235, lng: -118.243683 }; // Downtown Los Angeles
 const DEFAULT_ZOOM = 12;
-const DEFAULT_MAP_ID = "8ea6910316a0016bfd7680be";
 
 export function MapComponent({ trucks, selectedTruckId }: MapComponentProps) {
   const [center, setCenter] = useState(DEFAULT_CENTER);
@@ -28,28 +27,30 @@ export function MapComponent({ trucks, selectedTruckId }: MapComponentProps) {
       }
     } else if (trucks.length > 0) {
        // Optional: Adjust center based on average location of trucks or first truck
-       // For simplicity, we keep default or previously set center
+       // For simplicity, we keep default or previously set center if no truck is selected.
+       // If you want to set center to user's location on initial load without a selected truck,
+       // a button to trigger geolocation is recommended.
     }
   }, [selectedTruckId, trucks]);
   
-  // For initial load, try to get user's location
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setCenter({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-          setZoom(13);
-        },
-        () => {
-          // Handle error or user denial - use default location
-          console.warn("Geolocation permission denied or unavailable. Using default location.");
-        }
-      );
-    }
-  }, []);
+  // Removed automatic geolocation on load to prevent violation.
+  // Consider adding a button for "Find my location" to trigger this.
+  // useEffect(() => {
+  //   if (navigator.geolocation) {
+  //     navigator.geolocation.getCurrentPosition(
+  //       (position) => {
+  //         setCenter({
+  //           lat: position.coords.latitude,
+  //           lng: position.coords.longitude,
+  //         });
+  //         setZoom(13);
+  //       },
+  //       () => {
+  //         console.warn("Geolocation permission denied or unavailable. Using default location.");
+  //       }
+  //     );
+  //   }
+  // }, []);
 
 
   return (
@@ -60,7 +61,7 @@ export function MapComponent({ trucks, selectedTruckId }: MapComponentProps) {
         zoom={zoom}
         gestureHandling={'greedy'}
         disableDefaultUI={true}
-        mapId={process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID || DEFAULT_MAP_ID}
+        mapId={process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID} // Rely solely on env variable
         className="h-full w-full"
         onCenterChanged={(ev) => setCenter(ev.detail.center)}
         onZoomChanged={(ev) => setZoom(ev.detail.zoom)}
@@ -72,4 +73,3 @@ export function MapComponent({ trucks, selectedTruckId }: MapComponentProps) {
     </div>
   );
 }
-

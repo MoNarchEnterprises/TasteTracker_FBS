@@ -1,15 +1,16 @@
 import Link from 'next/link';
-import { MapPin, Heart, Utensils, Bell } from 'lucide-react';
+import { MapPin, Heart, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ThemeToggle } from '@/components/layout/theme-toggle'; // Will create this next
-import { NotificationToggle } from '@/components/layout/notification-toggle'; // Will create this
+import { ThemeToggle } from '@/components/layout/theme-toggle';
+import { NotificationToggle } from '@/components/layout/notification-toggle';
+import { TasteTrackerLogo } from '@/components/icons';
 
 export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         <Link href="/" className="mr-6 flex items-center space-x-2">
-          <Utensils className="h-6 w-6 text-primary" />
+          <TasteTrackerLogo className="h-8 w-8" />
           <span className="font-bold sm:inline-block text-lg">
             TasteTracker
           </span>

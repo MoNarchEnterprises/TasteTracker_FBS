@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { FoodTruck, MenuItem } from '@/types';
@@ -26,8 +27,9 @@ export default function FoodTruckProfileClient({ truck }: FoodTruckProfileClient
             <Image
               src={truck.photos[0]}
               alt={`Main photo of ${truck.name}`}
-              layout="fill"
-              objectFit="cover"
+              fill
+              sizes="100vw"
+              style={{ objectFit: 'cover' }}
               priority
               data-ai-hint="food truck main"
             />
@@ -127,14 +129,16 @@ export default function FoodTruckProfileClient({ truck }: FoodTruckProfileClient
                       </AccordionTrigger>
                       <AccordionContent className="space-y-2">
                         {item.imageUrl && (
+                          <div className="relative w-[150px] h-[100px] rounded-md overflow-hidden">
                            <Image
                               src={item.imageUrl}
                               alt={item.name}
-                              width={150}
-                              height={100}
-                              className="rounded-md object-cover aspect-[3/2]"
+                              fill
+                              sizes="150px"
+                              style={{ objectFit: 'cover' }}
                               data-ai-hint="menu item food"
                             />
+                          </div>
                         )}
                         {item.description && <p className="text-sm text-muted-foreground">{item.description}</p>}
                       </AccordionContent>
@@ -160,8 +164,9 @@ export default function FoodTruckProfileClient({ truck }: FoodTruckProfileClient
                       <Image
                         src={photoUrl}
                         alt={`${truck.name} photo ${index + 1}`}
-                        layout="fill"
-                        objectFit="cover"
+                        fill
+                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
+                        style={{ objectFit: 'cover' }}
                         data-ai-hint="food truck gallery"
                       />
                     </div>

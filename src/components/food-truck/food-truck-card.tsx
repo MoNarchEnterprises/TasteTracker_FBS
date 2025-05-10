@@ -1,3 +1,4 @@
+
 import type { FoodTruck } from '@/types';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -21,8 +22,10 @@ export function FoodTruckCard({ truck, onViewOnMap }: FoodTruckCardProps) {
             <Image
               src={truck.photos[0]}
               alt={`Photo of ${truck.name}`}
-              layout="fill"
-              objectFit="cover"
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              style={{ objectFit: 'cover' }}
+              priority // Added priority as this image might be LCP
               data-ai-hint="food truck photo"
             />
           </div>

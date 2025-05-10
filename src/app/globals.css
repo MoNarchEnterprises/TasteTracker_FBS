@@ -16,8 +16,8 @@ body {
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
 
-    --primary: 180 100% 35%; /* Cyan - Made it a bit darker for better contrast with white text if needed */
-    --primary-foreground: 0 0% 100%; /* White text on Cyan buttons */
+    --primary: 180 100% 50%; /* Cyan (#00FFFF) */
+    --primary-foreground: 240 10% 3.9%; /* Dark text for contrast on light Cyan */
 
     --secondary: 240 4.8% 95.9%; /* Light gray for secondary elements */
     --secondary-foreground: 240 5.9% 10%;
@@ -25,15 +25,15 @@ body {
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
 
-    --accent: 180 100% 50%; /* Cyan for other accents if needed, slightly lighter than primary */
-    --accent-foreground: 240 10% 3.9%;
+    --accent: 180 100% 50%; /* Cyan (#00FFFF) */
+    --accent-foreground: 240 10% 3.9%; /* Dark text for contrast on light Cyan */
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 180 100% 45%; /* Cyan for rings, matching primary or slightly adjusted */
+    --ring: 180 100% 50%; /* Cyan for rings */
 
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
@@ -42,19 +42,19 @@ body {
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
 
-    /* Custom status colors */
-    --status-red: 0 100% 50%;
-    --status-green: 120 100% 45%; /* Slightly desaturated green for better UI */
-    --status-yellow: 54 100% 50%; /* Adjusted yellow for better visibility */
+    /* Custom status colors based on logo/style guidelines */
+    --status-red: 0 100% 50%;    /* Red (#FF0000) */
+    --status-green: 120 100% 50%; /* Green (#00FF00) */
+    --status-yellow: 60 100% 50%; /* Yellow (#FFFF00) */
     
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 180 100% 35%; /* Cyan for sidebar primary */
-    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-primary: 180 100% 50%; /* Cyan for sidebar primary */
+    --sidebar-primary-foreground: 240 10% 3.9%; /* Dark text */
     --sidebar-accent: 240 4.8% 95.9%;
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 180 100% 45%;
+    --sidebar-ring: 180 100% 50%;
   }
 
   .dark {
@@ -66,8 +66,8 @@ body {
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 180 100% 45%; /* Cyan for dark mode */
-    --primary-foreground: 240 10% 3.9%; /* Dark text on Cyan for dark mode */
+    --primary: 180 100% 50%; /* Cyan (#00FFFF) */
+    --primary-foreground: 240 10% 3.9%; /* Dark text for contrast on light Cyan */
 
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
@@ -75,29 +75,29 @@ body {
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 0 0% 64.9%;
 
-    --accent: 180 100% 45%; /* Cyan for dark mode accents */
-    --accent-foreground: 0 0% 98%;
+    --accent: 180 100% 50%; /* Cyan (#00FFFF) */
+    --accent-foreground: 240 10% 3.9%; /* Dark text for contrast on light Cyan */
 
     --destructive: 0 72.2% 50.6%;
     --destructive-foreground: 0 0% 98%;
 
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 180 100% 45%; /* Cyan */
+    --ring: 180 100% 50%; /* Cyan */
 
-    /* Custom status colors for dark mode */
-    --status-red: 0 100% 60%;
-    --status-green: 120 100% 55%;
-    --status-yellow: 54 100% 60%;
+    /* Custom status colors for dark mode based on logo/style guidelines */
+    --status-red: 0 100% 50%;    /* Red (#FF0000) */
+    --status-green: 120 100% 50%; /* Green (#00FF00) */
+    --status-yellow: 60 100% 50%; /* Yellow (#FFFF00) */
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 180 100% 45%; /* Cyan for dark mode sidebar */
-    --sidebar-primary-foreground: 240 10% 3.9%;
+    --sidebar-primary: 180 100% 50%; /* Cyan for dark mode sidebar */
+    --sidebar-primary-foreground: 240 10% 3.9%; /* Dark text */
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 180 100% 45%;
+    --sidebar-ring: 180 100% 50%;
   }
 }
 

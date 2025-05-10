@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { FoodTruck } from '@/types';
@@ -46,14 +47,16 @@ export function FoodTruckMarker({ truck }: FoodTruckMarkerProps) {
         >
           <div className="p-2 w-64">
             {truck.photos[0] && (
-               <Image
-                src={truck.photos[0]}
-                alt={truck.name}
-                width={256}
-                height={120}
-                className="w-full h-30 object-cover rounded-t-md"
-                data-ai-hint="food truck photo"
-              />
+              <div className="relative w-full h-32 rounded-t-md overflow-hidden">
+                 <Image
+                  src={truck.photos[0]}
+                  alt={truck.name}
+                  fill
+                  sizes="256px" // approx width of infowindow
+                  style={{ objectFit: 'cover' }}
+                  data-ai-hint="food truck photo"
+                />
+              </div>
             )}
             <h3 className="text-lg font-semibold mt-2">{truck.name}</h3>
             <p className="text-sm text-muted-foreground">{truck.cuisine}</p>
