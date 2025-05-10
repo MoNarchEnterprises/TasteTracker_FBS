@@ -25,7 +25,7 @@ export function FoodTruckCard({ truck, onViewOnMap }: FoodTruckCardProps) {
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               style={{ objectFit: 'cover' }}
-              priority // Added priority as this image might be LCP
+              priority // LCP candidate
               data-ai-hint="food truck photo"
             />
           </div>
@@ -60,3 +60,4 @@ export function FoodTruckCard({ truck, onViewOnMap }: FoodTruckCardProps) {
     </Card>
   );
 }
+

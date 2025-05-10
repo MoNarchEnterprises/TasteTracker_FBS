@@ -30,7 +30,7 @@ export default function FoodTruckProfileClient({ truck }: FoodTruckProfileClient
               fill
               sizes="100vw"
               style={{ objectFit: 'cover' }}
-              priority
+              priority // LCP candidate
               data-ai-hint="food truck main"
             />
           )}
@@ -182,3 +182,4 @@ export default function FoodTruckProfileClient({ truck }: FoodTruckProfileClient
     </div>
   );
 }
+
