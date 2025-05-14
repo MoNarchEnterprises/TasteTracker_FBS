@@ -40,18 +40,44 @@ const signUpSchema = z.object({
   website: z.string().url("Invalid URL format").optional().or(z.literal('')),
   logoUrl: z.string().url("Invalid URL format for logo").optional().or(z.literal('')),
   logoFile: z.preprocess(
-    // Convert empty FileList to null, otherwise pass through
-    (val) => (val instanceof FileList && val.length === 0 ? null : val),
-    z.instanceof(FileList).nullable().optional() // FileList, null, or undefined
-      .refine(files => !files || files.length <= 1, {
-        message: "Please select a single file for the logo.",
-      })
-      .refine(files => !files || (files && files[0] && files[0].size <= MAX_FILE_SIZE_BYTES), {
-        message: `Logo file size must be ${MAX_FILE_SIZE_MB}MB or less.`,
-      })
-      .refine(files => !files || (files && files[0] && ACCEPTED_IMAGE_TYPES.includes(files[0].type)), {
-        message: "Invalid file type. Accepted: JPG, PNG, GIF, SVG.",
-      })
+    (val) => {
+      // Conditionally check instanceof FileList only if FileList is defined (client-side)
+      if (typeof FileList !== 'undefined' && val instanceof FileList && val.length === 0) {
+        return null; // Convert empty FileList to null
+      }
+      return val;
+    },
+    // Conditionally use z.instanceof(FileList) on client, z.any() on server
+    (typeof FileList !== 'undefined' ? z.instanceof(FileList) : z.any())
+      .nullable() // Allow null (e.g., after preprocessing an empty FileList or if no file is selected)
+      .optional() // Allow undefined (if the field is not touched)
+      .refine( // Refinement for single file
+        (files) => {
+          // On server (FileList undefined) or if files is null/undefined, this check passes.
+          if (typeof FileList === 'undefined' || !files) return true;
+          // On client, if files is a FileList, check its length.
+          return files.length <= 1;
+        },
+        { message: 'Please select a single file for the logo.' }
+      )
+      .refine( // Refinement for file size
+        (files) => {
+          // On server, or if files is null/undefined, or an empty FileList (which became null), pass.
+          if (typeof FileList === 'undefined' || !files || (files instanceof FileList && files.length === 0)) return true;
+          // On client, if files is a FileList with at least one file, check its size.
+          return files instanceof FileList && files[0] && files[0].size <= MAX_FILE_SIZE_BYTES;
+        },
+        { message: `Logo file size must be ${MAX_FILE_SIZE_MB}MB or less.` }
+      )
+      .refine( // Refinement for file type
+        (files) => {
+          // On server, or if files is null/undefined, or an empty FileList (which became null), pass.
+          if (typeof FileList === 'undefined' || !files || (files instanceof FileList && files.length === 0)) return true;
+          // On client, if files is a FileList with at least one file, check its type.
+          return files instanceof FileList && files[0] && ACCEPTED_IMAGE_TYPES.includes(files[0].type);
+        },
+        { message: 'Invalid file type. Accepted: JPG, PNG, GIF, SVG.' }
+      )
   ),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
@@ -247,17 +273,17 @@ export default function SignUpForm() {
                  <FormField
                   control={form.control}
                   name="logoFile"
-                  render={({ field }) => (
+                  render={({ field: { onChange, onBlur, name, ref } }) => ( // Destructure field to pass correct props to Input
                     <FormItem>
                       <FormLabel>Upload Logo (Optional)</FormLabel>
                       <FormControl>
                         <Input
                           type="file"
                           accept={ACCEPTED_IMAGE_TYPES.join(",")}
-                          onBlur={field.onBlur}
-                          name={field.name}
-                          ref={field.ref}
-                          onChange={(e) => field.onChange(e.target.files)} // Pass FileList or null
+                          onBlur={onBlur}
+                          name={name}
+                          ref={ref}
+                          onChange={(e) => onChange(e.target.files)} // Pass FileList or null
                         />
                       </FormControl>
                        <FormDescription>
