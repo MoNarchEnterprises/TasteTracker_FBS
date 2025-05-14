@@ -22,6 +22,10 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+const MAX_FILE_SIZE_MB = 5;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
+
 const signUpSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
@@ -35,6 +39,20 @@ const signUpSchema = z.object({
   cuisines: z.array(z.string()).optional(),
   website: z.string().url("Invalid URL format").optional().or(z.literal('')),
   logoUrl: z.string().url("Invalid URL format for logo").optional().or(z.literal('')),
+  logoFile: z.preprocess(
+    // Convert empty FileList to null, otherwise pass through
+    (val) => (val instanceof FileList && val.length === 0 ? null : val),
+    z.instanceof(FileList).nullable().optional() // FileList, null, or undefined
+      .refine(files => !files || files.length <= 1, {
+        message: "Please select a single file for the logo.",
+      })
+      .refine(files => !files || (files && files[0] && files[0].size <= MAX_FILE_SIZE_BYTES), {
+        message: `Logo file size must be ${MAX_FILE_SIZE_MB}MB or less.`,
+      })
+      .refine(files => !files || (files && files[0] && ACCEPTED_IMAGE_TYPES.includes(files[0].type)), {
+        message: "Invalid file type. Accepted: JPG, PNG, GIF, SVG.",
+      })
+  ),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -51,8 +69,6 @@ const signUpSchema = z.object({
 type SignUpFormValues = z.infer<typeof signUpSchema>;
 
 export default function SignUpForm() {
-  const [accountType, setAccountType] = useState<"customer" | "foodTruck" | undefined>();
-
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -64,11 +80,15 @@ export default function SignUpForm() {
       cuisines: [],
       website: "",
       logoUrl: "",
+      logoFile: undefined,
     },
   });
 
   function onSubmit(data: SignUpFormValues) {
     console.log("Form submitted:", data);
+    if (data.logoFile && data.logoFile.length > 0) {
+      console.log("Uploaded logo file:", data.logoFile[0]);
+    }
     // Here you would typically handle the actual signup logic (e.g., API call)
     alert("Sign up successful! (Check console for data)");
   }
@@ -153,7 +173,6 @@ export default function SignUpForm() {
                     <RadioGroup
                       onValueChange={(value) => {
                         field.onChange(value);
-                        setAccountType(value as "customer" | "foodTruck");
                       }}
                       defaultValue={field.value}
                       className="flex flex-col space-y-1"
@@ -219,7 +238,30 @@ export default function SignUpForm() {
                         <Input type="url" placeholder="https://example.com/logo.png" {...field} />
                       </FormControl>
                        <FormDescription>
-                        Link to an image of your food truck's logo.
+                        Link to an image of your food truck's logo. Alternatively, upload a file below.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={form.control}
+                  name="logoFile"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Upload Logo (Optional)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="file"
+                          accept={ACCEPTED_IMAGE_TYPES.join(",")}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
+                          onChange={(e) => field.onChange(e.target.files)} // Pass FileList or null
+                        />
+                      </FormControl>
+                       <FormDescription>
+                        Upload an image file (PNG, JPG, GIF, SVG, max {MAX_FILE_SIZE_MB}MB). This will be used if no URL is provided or if preferred.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -287,3 +329,4 @@ export default function SignUpForm() {
     </Card>
   );
 }
+
