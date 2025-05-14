@@ -1,12 +1,14 @@
-import { getAllFoodTrucks } from '@/lib/mock-data';
-import HomeClient from './home-client';
 
-export default async function HomePage() {
-  const trucks = await getAllFoodTrucks();
+import type { Metadata } from 'next';
+import LandingClient from '@/components/auth/landing-client';
 
+export const metadata: Metadata = {
+  title: 'Welcome to TasteTracker - Find Your Next Meal!',
+  description: 'Discover local food trucks or list your own. Join TasteTracker today!',
+};
+
+export default function LandingPage() {
   return (
-    <section className="w-full h-full">
-      <HomeClient trucks={trucks} />
-    </section>
+    <LandingClient />
   );
 }

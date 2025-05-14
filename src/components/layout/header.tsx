@@ -1,5 +1,6 @@
+
 import Link from 'next/link';
-import { MapPin, Heart, Bell } from 'lucide-react';
+import { MapPin, Heart } from 'lucide-react'; // Bell removed as NotificationToggle will handle it
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
 import { NotificationToggle } from '@/components/layout/notification-toggle';
@@ -17,7 +18,8 @@ export function Header() {
         </Link>
         <nav className="flex flex-1 items-center space-x-2 sm:space-x-4">
           <Button variant="ghost" asChild>
-            <Link href="/" className="text-sm font-medium">
+            {/* Updated link to /map-dashboard */}
+            <Link href="/map-dashboard" className="text-sm font-medium">
               <MapPin className="mr-2 h-4 w-4" />
               Map
             </Link>
@@ -32,6 +34,10 @@ export function Header() {
         <div className="flex items-center space-x-2">
           <NotificationToggle />
           <ThemeToggle />
+           {/* Example of Login/Signup buttons if user is not authenticated - for future use */}
+           {/* For now, landing page handles this. In a real app, auth state would dictate this. */}
+           {/* <Button variant="outline" size="sm" asChild><Link href="/login">Login</Link></Button> */}
+           {/* <Button size="sm" asChild><Link href="/signup">Sign Up</Link></Button> */}
         </div>
       </div>
     </header>
