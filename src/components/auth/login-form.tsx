@@ -16,6 +16,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
+import { supabase } from "@/lib/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -25,6 +28,8 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
+  const { toast } = useToast();
+  const router = useRouter();
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -33,10 +38,26 @@ export default function LoginForm() {
     },
   });
 
-  function onSubmit(data: LoginFormValues) {
-    console.log("Login attempt:", data);
-    // Placeholder for actual login logic
-    alert("Login successful! (Check console for data)");
+  async function onSubmit(data: LoginFormValues) {
+    const { error } = await supabase.auth.signInWithPassword({
+      email: data.email,
+      password: data.password,
+    });
+
+    if (error) {
+      toast({
+        title: "Login Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Login Successful!",
+        description: "Welcome back!",
+      });
+      router.push("/map-dashboard"); 
+      router.refresh(); // To ensure layout re-renders if it depends on auth state
+    }
   }
 
   return (
@@ -73,7 +94,9 @@ export default function LoginForm() {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">Login</Button>
+            <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? 'Logging In...' : 'Login'}
+            </Button>
           </form>
         </Form>
       </CardContent>

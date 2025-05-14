@@ -17,10 +17,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { cuisineOptions, type CuisineOption } from "@/lib/cuisine-options";
-import { useState } from "react";
+import { cuisineOptions } from "@/lib/cuisine-options";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { supabase } from "@/lib/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
+import type { ChangeEvent } from "react";
+
 
 const MAX_FILE_SIZE_MB = 5;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
@@ -41,39 +45,31 @@ const signUpSchema = z.object({
   logoUrl: z.string().url("Invalid URL format for logo").optional().or(z.literal('')),
   logoFile: z.preprocess(
     (val) => {
-      // Conditionally check instanceof FileList only if FileList is defined (client-side)
       if (typeof FileList !== 'undefined' && val instanceof FileList && val.length === 0) {
-        return null; // Convert empty FileList to null
+        return null; 
       }
       return val;
     },
-    // Conditionally use z.instanceof(FileList) on client, z.any() on server
     (typeof FileList !== 'undefined' ? z.instanceof(FileList) : z.any())
-      .nullable() // Allow null (e.g., after preprocessing an empty FileList or if no file is selected)
-      .optional() // Allow undefined (if the field is not touched)
-      .refine( // Refinement for single file
+      .nullable() 
+      .optional() 
+      .refine( 
         (files) => {
-          // On server (FileList undefined) or if files is null/undefined, this check passes.
           if (typeof FileList === 'undefined' || !files) return true;
-          // On client, if files is a FileList, check its length.
           return files.length <= 1;
         },
         { message: 'Please select a single file for the logo.' }
       )
-      .refine( // Refinement for file size
+      .refine( 
         (files) => {
-          // On server, or if files is null/undefined, or an empty FileList (which became null), pass.
           if (typeof FileList === 'undefined' || !files || (files instanceof FileList && files.length === 0)) return true;
-          // On client, if files is a FileList with at least one file, check its size.
           return files instanceof FileList && files[0] && files[0].size <= MAX_FILE_SIZE_BYTES;
         },
         { message: `Logo file size must be ${MAX_FILE_SIZE_MB}MB or less.` }
       )
-      .refine( // Refinement for file type
+      .refine( 
         (files) => {
-          // On server, or if files is null/undefined, or an empty FileList (which became null), pass.
           if (typeof FileList === 'undefined' || !files || (files instanceof FileList && files.length === 0)) return true;
-          // On client, if files is a FileList with at least one file, check its type.
           return files instanceof FileList && files[0] && ACCEPTED_IMAGE_TYPES.includes(files[0].type);
         },
         { message: 'Invalid file type. Accepted: JPG, PNG, GIF, SVG.' }
@@ -95,6 +91,8 @@ const signUpSchema = z.object({
 type SignUpFormValues = z.infer<typeof signUpSchema>;
 
 export default function SignUpForm() {
+  const { toast } = useToast();
+  const router = useRouter();
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -110,14 +108,69 @@ export default function SignUpForm() {
     },
   });
 
-  function onSubmit(data: SignUpFormValues) {
-    console.log("Form submitted:", data);
-    if (data.logoFile && data.logoFile.length > 0) {
-      console.log("Uploaded logo file:", data.logoFile[0]);
+  async function onSubmit(values: SignUpFormValues) {
+    const { 
+      name, 
+      email,
+      password,
+      phoneNumber, 
+      accountType, 
+      foodTruckName, 
+      cuisines, 
+      website, 
+      logoUrl,
+      logoFile
+    } = values;
+
+    const metadata: Record<string, any> = {
+      full_name: name,
+      phone: phoneNumber,
+      account_type: accountType,
+    };
+
+    if (accountType === 'foodTruck') {
+      metadata.food_truck_name = foodTruckName;
+      metadata.cuisines = cuisines;
+      metadata.website = website;
+      metadata.logo_url = logoUrl;
+      // Note: Actual logoFile upload to Supabase Storage is not implemented here.
+      // This would typically involve uploading the file and then storing the resulting URL.
+      if (logoFile && logoFile.length > 0) {
+        console.log("Logo file selected:", logoFile[0].name, "but not uploaded yet.");
+        // metadata.logo_storage_path = 'path_to_uploaded_logo_in_storage'; // Example
+      }
     }
-    // Here you would typically handle the actual signup logic (e.g., API call)
-    alert("Sign up successful! (Check console for data)");
+    
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        data: metadata,
+        // emailRedirectTo: `${window.location.origin}/auth/callback`, // Optional: if email confirmation is enabled
+      },
+    });
+
+    if (error) {
+      toast({
+        title: "Sign Up Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else if (data.user) {
+      toast({
+        title: "Sign Up Successful!",
+        description: data.user.user_metadata?.email_confirmed ? "You can now log in." : "Please check your email to confirm your account.",
+      });
+      // If email confirmation is not required or user is auto-confirmed, redirect them
+      // For now, let's assume immediate login or user will be prompted for email verification by Supabase
+      router.push("/login"); // Or to a page that says "check your email"
+    }
   }
+
+  const handleLogoFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    form.setValue('logoFile', files, { shouldValidate: true });
+  };
 
   return (
     <Card className="w-full">
@@ -273,7 +326,7 @@ export default function SignUpForm() {
                  <FormField
                   control={form.control}
                   name="logoFile"
-                  render={({ field: { onChange, onBlur, name, ref } }) => ( // Destructure field to pass correct props to Input
+                  render={({ field: { onBlur, name, ref } }) => ( 
                     <FormItem>
                       <FormLabel>Upload Logo (Optional)</FormLabel>
                       <FormControl>
@@ -283,7 +336,7 @@ export default function SignUpForm() {
                           onBlur={onBlur}
                           name={name}
                           ref={ref}
-                          onChange={(e) => onChange(e.target.files)} // Pass FileList or null
+                          onChange={handleLogoFileChange} 
                         />
                       </FormControl>
                        <FormDescription>
@@ -348,11 +401,12 @@ export default function SignUpForm() {
                 />
               </>
             )}
-            <Button type="submit" className="w-full">Create Account</Button>
+            <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? 'Creating Account...' : 'Create Account'}
+            </Button>
           </form>
         </Form>
       </CardContent>
     </Card>
   );
 }
-
