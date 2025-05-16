@@ -4,16 +4,16 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Star, MapPin as MapPinIcon } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { AvailabilityIndicator } from './availability-indicator';
 import { FollowButton } from './follow-button';
 
 interface FoodTruckCardProps {
   truck: FoodTruck;
-  onViewOnMap?: (truckId: string) => void;
+  // Removed onViewOnMap as it's no longer used in this context
 }
 
-export function FoodTruckCard({ truck, onViewOnMap }: FoodTruckCardProps) {
+export function FoodTruckCard({ truck }: FoodTruckCardProps) {
   return (
     <Card className="w-full overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
       <CardHeader className="p-0">
@@ -48,16 +48,10 @@ export function FoodTruckCard({ truck, onViewOnMap }: FoodTruckCardProps) {
           <Button asChild variant="default" size="sm" className="flex-grow sm:flex-grow-0">
             <Link href={`/trucks/${truck.id}`}>View Profile</Link>
           </Button>
-          {onViewOnMap && (
-            <Button variant="outline" size="sm" onClick={() => onViewOnMap(truck.id)} className="flex-grow sm:flex-grow-0">
-              <MapPinIcon className="w-4 h-4 mr-2" />
-              On Map
-            </Button>
-          )}
+          {/* Removed "View on Map" button as it's contextually replaced */}
         </div>
         <FollowButton truckId={truck.id} size="sm" />
       </CardFooter>
     </Card>
   );
 }
-
