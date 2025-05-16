@@ -11,7 +11,7 @@ export default function LandingClient() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)] text-center px-4 py-8">
-      <TasteTrackerLogo className="h-32 w-32 mb-6" />
+      <TasteTrackerLogo width={128} height={128} className="mb-6" />
       <h1 className="text-5xl font-bold mb-4 text-primary">
         TasteTracker
       </h1>

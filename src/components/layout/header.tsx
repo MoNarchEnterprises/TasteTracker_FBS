@@ -11,7 +11,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         <Link href="/" className="mr-6 flex items-center space-x-2">
-          <TasteTrackerLogo className="h-8 w-8" />
+          <TasteTrackerLogo width={32} height={32} />
           <span className="font-bold sm:inline-block text-lg">
             TasteTracker
           </span>
