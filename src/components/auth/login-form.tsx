@@ -39,7 +39,7 @@ export default function LoginForm() {
   });
 
   async function onSubmit(data: LoginFormValues) {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data: signInData, error } = await supabase.auth.signInWithPassword({
       email: data.email,
       password: data.password,
     });
@@ -50,13 +50,26 @@ export default function LoginForm() {
         description: error.message,
         variant: "destructive",
       });
-    } else {
+    } else if (signInData.user) {
       toast({
         title: "Login Successful!",
         description: "Welcome back!",
       });
-      router.push("/map-dashboard"); 
-      router.refresh(); // To ensure layout re-renders if it depends on auth state
+      
+      // Check user metadata for account type
+      const accountType = signInData.user.user_metadata?.account_type;
+      if (accountType === 'foodTruck') {
+        router.push("/dashboard/operator");
+      } else {
+        router.push("/map-dashboard"); 
+      }
+      router.refresh(); 
+    } else {
+       toast({
+        title: "Login Issue",
+        description: "Could not retrieve user data after login. Please try again.",
+        variant: "destructive",
+      });
     }
   }
 

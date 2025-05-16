@@ -1,8 +1,8 @@
 
-"use client"; // Add "use client" for hooks
+"use client"; 
 
 import Link from 'next/link';
-import { MapPin, Heart, LogOut, User as UserIcon } from 'lucide-react';
+import { MapPin, Heart, LogOut, User as UserIcon, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
 import { NotificationToggle } from '@/components/layout/notification-toggle';
@@ -26,13 +26,12 @@ export function Header() {
 
   const handleSignOut = async () => {
     await signOut();
-    router.push('/'); // Redirect to home page after sign out
+    router.push('/'); 
     router.refresh();
   };
 
   const getInitials = (email?: string | null) => {
-    if (!email) return 'TT'; // TasteTracker initials as fallback
-    // Attempt to get initials from user_metadata.full_name first
+    if (!email) return 'TT'; 
     const fullName = user?.user_metadata?.full_name;
     if (fullName && typeof fullName === 'string' && fullName.trim().length > 0) {
       const nameParts = fullName.split(' ');
@@ -41,9 +40,10 @@ export function Header() {
       }
       return fullName.substring(0, 2).toUpperCase();
     }
-    // Fallback to email
     return email.substring(0, 2).toUpperCase();
   };
+
+  const isFoodTruckOperator = user?.user_metadata?.account_type === 'foodTruck';
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -108,6 +108,15 @@ export function Header() {
                     Account
                   </Link>
                 </DropdownMenuItem>
+                {isFoodTruckOperator && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard/operator">
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      My Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="mr-2 h-4 w-4" />
                   Sign Out
