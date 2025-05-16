@@ -21,7 +21,7 @@ export default function FoodTruckProfileClient({ truck }: FoodTruckProfileClient
   return (
     <div className="space-y-8">
       {/* Header Section */}
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden rounded-lg shadow-lg">
         <CardHeader className="relative p-0 h-64 md:h-80">
           {truck.photos.length > 0 && (
             <Image
@@ -45,20 +45,20 @@ export default function FoodTruckProfileClient({ truck }: FoodTruckProfileClient
             <div className="space-y-2">
               <div className="flex items-center text-amber-500">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className={`w-5 h-5 ${i < Math.round(truck.rating) ? 'fill-amber-500' : 'fill-gray-300'}`} />
+                  <Star key={i} className={`w-5 h-5 ${i < Math.round(truck.rating) ? 'fill-amber-500' : 'fill-muted-foreground/30'}`} />
                 ))}
                 <span className="ml-2 text-foreground">{truck.rating.toFixed(1)} stars</span>
               </div>
               <AvailabilityIndicator status={truck.availability} size="md" />
             </div>
-            <FollowButton truckId={truck.id} size="lg" />
+            <FollowButton truckId={truck.id} truckName={truck.name} size="lg" />
           </div>
           <p className="mt-4 text-muted-foreground">{truck.description}</p>
         </CardContent>
       </Card>
 
       {/* Details Section */}
-      <Card>
+      <Card className="rounded-lg shadow-md">
         <CardHeader>
           <CardTitle>Details</CardTitle>
         </CardHeader>
@@ -69,8 +69,9 @@ export default function FoodTruckProfileClient({ truck }: FoodTruckProfileClient
               <div>
                 <h4 className="font-semibold">Location</h4>
                 <p className="text-muted-foreground">{truck.location.address}</p>
-                <Button variant="link" size="sm" className="p-0 h-auto" asChild>
-                  <Link href={`/?selectedTruckId=${truck.id}`} target="_blank" rel="noopener noreferrer">
+                {/* Link to map-dashboard and center on this truck */}
+                <Button variant="link" size="sm" className="p-0 h-auto text-primary hover:underline" asChild>
+                  <Link href={`/map-dashboard?truckId=${truck.id}`} target="_blank" rel="noopener noreferrer">
                     View on Map
                   </Link>
                 </Button>
@@ -107,12 +108,12 @@ export default function FoodTruckProfileClient({ truck }: FoodTruckProfileClient
 
       {/* Menu and Photos Tabs */}
       <Tabs defaultValue="menu" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 md:w-1/2">
+        <TabsList className="grid w-full grid-cols-2 md:w-1/2 rounded-lg">
           <TabsTrigger value="menu">Menu</TabsTrigger>
           <TabsTrigger value="photos">Photos</TabsTrigger>
         </TabsList>
         <TabsContent value="menu">
-          <Card>
+          <Card className="rounded-lg shadow-md">
             <CardHeader>
               <CardTitle>Menu</CardTitle>
             </CardHeader>
@@ -124,12 +125,12 @@ export default function FoodTruckProfileClient({ truck }: FoodTruckProfileClient
                       <AccordionTrigger>
                         <div className="flex justify-between items-center w-full pr-2">
                           <span className="font-medium">{item.name}</span>
-                          <Badge variant="secondary">{item.price}</Badge>
+                          <Badge variant="secondary" className="rounded-sm">{item.price}</Badge>
                         </div>
                       </AccordionTrigger>
                       <AccordionContent className="space-y-2">
                         {item.imageUrl && (
-                          <div className="relative w-[150px] h-[100px] rounded-md overflow-hidden">
+                          <div className="relative w-[150px] h-[100px] rounded-md overflow-hidden my-2">
                            <Image
                               src={item.imageUrl}
                               alt={item.name}
@@ -152,7 +153,7 @@ export default function FoodTruckProfileClient({ truck }: FoodTruckProfileClient
           </Card>
         </TabsContent>
         <TabsContent value="photos">
-          <Card>
+          <Card className="rounded-lg shadow-md">
             <CardHeader>
               <CardTitle>Photo Gallery</CardTitle>
             </CardHeader>
@@ -182,4 +183,3 @@ export default function FoodTruckProfileClient({ truck }: FoodTruckProfileClient
     </div>
   );
 }
-

@@ -10,12 +10,11 @@ import { FollowButton } from './follow-button';
 
 interface FoodTruckCardProps {
   truck: FoodTruck;
-  // Removed onViewOnMap as it's no longer used in this context
 }
 
 export function FoodTruckCard({ truck }: FoodTruckCardProps) {
   return (
-    <Card className="w-full overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+    <Card className="w-full overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg">
       <CardHeader className="p-0">
         {truck.photos[0] && (
           <div className="aspect-[16/9] relative">
@@ -48,9 +47,8 @@ export function FoodTruckCard({ truck }: FoodTruckCardProps) {
           <Button asChild variant="default" size="sm" className="flex-grow sm:flex-grow-0">
             <Link href={`/trucks/${truck.id}`}>View Profile</Link>
           </Button>
-          {/* Removed "View on Map" button as it's contextually replaced */}
         </div>
-        <FollowButton truckId={truck.id} size="sm" />
+        <FollowButton truckId={truck.id} truckName={truck.name} size="sm" />
       </CardFooter>
     </Card>
   );
