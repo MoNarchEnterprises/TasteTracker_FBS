@@ -1,8 +1,8 @@
 
 "use client";
 
+import React, { type ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import type { User } from '@supabase/supabase-js';
-import { useEffect, useState, createContext, useContext, type ReactNode } from 'react';
 import { supabase } from '@/lib/supabase/client';
 
 // Define the shape of the context value
@@ -57,8 +57,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     signOut,
   };
 
-  // Pass props explicitly
-  return <AuthContext.Provider value={authContextValue}>{children}</AuthContext.Provider>;
+  // Pass props explicitly, using React.createElement to avoid JSX parsing issues
+  return React.createElement(AuthContext.Provider, { value: authContextValue }, children);
 }
 
 export function useUser(): AuthContextType {
