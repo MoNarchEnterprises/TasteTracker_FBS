@@ -45,31 +45,33 @@ const signUpSchema = z.object({
   logoUrl: z.string().url("Invalid URL format for logo").optional().or(z.literal('')),
   logoFile: z.preprocess(
     (val) => {
+      // Handle server-side rendering where FileList might not be defined
+      if (typeof window === 'undefined') return null;
       if (typeof FileList !== 'undefined' && val instanceof FileList && val.length === 0) {
-        return null; 
+        return null;
       }
       return val;
     },
-    (typeof FileList !== 'undefined' ? z.instanceof(FileList) : z.any())
-      .nullable() 
-      .optional() 
-      .refine( 
+    (typeof window !== 'undefined' && typeof FileList !== 'undefined' ? z.instanceof(FileList) : z.any())
+      .nullable()
+      .optional()
+      .refine(
         (files) => {
-          if (typeof FileList === 'undefined' || !files) return true;
+          if (typeof window === 'undefined' || typeof FileList === 'undefined' || !files) return true;
           return files.length <= 1;
         },
         { message: 'Please select a single file for the logo.' }
       )
-      .refine( 
+      .refine(
         (files) => {
-          if (typeof FileList === 'undefined' || !files || (files instanceof FileList && files.length === 0)) return true;
+          if (typeof window === 'undefined' || typeof FileList === 'undefined' || !files || (files instanceof FileList && files.length === 0)) return true;
           return files instanceof FileList && files[0] && files[0].size <= MAX_FILE_SIZE_BYTES;
         },
         { message: `Logo file size must be ${MAX_FILE_SIZE_MB}MB or less.` }
       )
-      .refine( 
+      .refine(
         (files) => {
-          if (typeof FileList === 'undefined' || !files || (files instanceof FileList && files.length === 0)) return true;
+          if (typeof window === 'undefined' || typeof FileList === 'undefined' || !files || (files instanceof FileList && files.length === 0)) return true;
           return files instanceof FileList && files[0] && ACCEPTED_IMAGE_TYPES.includes(files[0].type);
         },
         { message: 'Invalid file type. Accepted: JPG, PNG, GIF, SVG.' }
@@ -98,6 +100,8 @@ export default function SignUpForm() {
     defaultValues: {
       name: "",
       email: "",
+      password: "", // Ensure defined default
+      confirmPassword: "", // Ensure defined default
       phoneNumber: "",
       accountType: "customer",
       foodTruckName: "",
@@ -109,30 +113,41 @@ export default function SignUpForm() {
   });
 
   async function onSubmit(values: SignUpFormValues) {
-    const { 
-      name, 
+    const {
+      name,
       email,
       password,
-      phoneNumber, 
-      accountType, 
-      foodTruckName, 
-      cuisines, 
-      website, 
+      phoneNumber,
+      accountType,
+      foodTruckName,
+      cuisines,
+      website,
       logoUrl,
       logoFile
     } = values;
 
     const metadata: Record<string, any> = {
       full_name: name,
-      phone: phoneNumber,
       account_type: accountType,
     };
 
+    if (phoneNumber) {
+      metadata.phone = phoneNumber;
+    }
+
     if (accountType === 'foodTruck') {
-      metadata.food_truck_name = foodTruckName;
-      metadata.cuisines = cuisines;
-      metadata.website = website;
-      metadata.logo_url = logoUrl;
+      if (foodTruckName) {
+        metadata.food_truck_name = foodTruckName;
+      }
+      if (cuisines && cuisines.length > 0) {
+        metadata.cuisines = cuisines;
+      }
+      if (website) {
+        metadata.website = website;
+      }
+      if (logoUrl) {
+        metadata.logo_url = logoUrl;
+      }
       // Note: Actual logoFile upload to Supabase Storage is not implemented here.
       // This would typically involve uploading the file and then storing the resulting URL.
       if (logoFile && logoFile.length > 0) {
@@ -140,7 +155,7 @@ export default function SignUpForm() {
         // metadata.logo_storage_path = 'path_to_uploaded_logo_in_storage'; // Example
       }
     }
-    
+
     const { data, error } = await supabase.auth.signUp({
       email: email,
       password: password,
@@ -161,9 +176,7 @@ export default function SignUpForm() {
         title: "Sign Up Successful!",
         description: data.user.user_metadata?.email_confirmed ? "You can now log in." : "Please check your email to confirm your account.",
       });
-      // If email confirmation is not required or user is auto-confirmed, redirect them
-      // For now, let's assume immediate login or user will be prompted for email verification by Supabase
-      router.push("/login"); // Or to a page that says "check your email"
+      router.push("/login");
     }
   }
 
@@ -326,7 +339,7 @@ export default function SignUpForm() {
                  <FormField
                   control={form.control}
                   name="logoFile"
-                  render={({ field: { onBlur, name, ref } }) => ( 
+                  render={({ field: { onBlur, name, ref } }) => (
                     <FormItem>
                       <FormLabel>Upload Logo (Optional)</FormLabel>
                       <FormControl>
@@ -336,7 +349,7 @@ export default function SignUpForm() {
                           onBlur={onBlur}
                           name={name}
                           ref={ref}
-                          onChange={handleLogoFileChange} 
+                          onChange={handleLogoFileChange}
                         />
                       </FormControl>
                        <FormDescription>
