@@ -93,7 +93,9 @@ export default function HomeClient({ trucks }: HomeClientProps) {
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden">
             {/* DialogContent in ShadCN already has a close button (X icon) by default in the top right */}
-            {/* No need for DialogHeader or DialogTitle if FoodTruckCard provides its own structure */}
+            <DialogHeader className="p-6 pb-0"> {/* Add padding to header if needed, or keep sr-only title compact */}
+              <DialogTitle className="sr-only">{selectedTruckForDialog.name} Details</DialogTitle>
+            </DialogHeader>
             <FoodTruckCard truck={selectedTruckForDialog} />
           </DialogContent>
         </Dialog>
